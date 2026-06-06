@@ -1,7 +1,8 @@
-import xml.etree.ElementTree as ET
 import os
 import sys
+import xml.etree.ElementTree as ET
 from typing import List
+
 
 class Definition:
     def __init__(self, reading: str, meanings: List[str], part_of_speech: str):

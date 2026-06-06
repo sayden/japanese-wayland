@@ -2,25 +2,14 @@
 
 A screen text capture and dictionary lookup tool for Japanese, built for **GNOME + Wayland**.
 
-The project is split into a **Python service** (core logic) and a **minimal GNOME Shell Extension** (hotkey triggers). The goal is to keep the JavaScript portion under 10% of the total codebase.
-
----
-
-## Architecture
-
-| Component | Language | Purpose |
-|-----------|----------|---------|
-| **Python Service** | Python (~90%) | DBus service, screenshot, OCR, dictionary, popup UI |
-| **GNOME Extension** | GJS (~10%) | Global hotkeys (`Super+Shift+J` / `Super+Shift+A`) |
-
 ---
 
 ## Features
 
 - **Area Capture** (`Super+Shift+J`): Drag to select a region → OCR → popup definition
 - **Full Screen Capture** (`Super+Shift+A`): Capture entire screen → OCR → popup definition
-- **Pluggable OCR**: Defaults to Tesseract CLI (with `jpn` + `jpn_vert` data). Designed to swap in MangaOCR or other engines later.
-- **Pluggable Dictionary**: Starts with a mock dictionary. Swap in Jisho API, JMdict SQLite, or an LLM without touching capture code.
+- **Pluggable OCR**: Defaults to Tesseract CLI (with `jpn` + `jpn_vert` data).
+Designed to swap in MangaOCR or other engines later.
 - **Native GTK4 Popup**: Dark-themed popup with extracted text, readings, and definitions.
 
 ---
@@ -110,48 +99,20 @@ After triggering, the service will:
 ```
 japanese-wayland/
 ├── service/
-│   ├── japanese-wayland.py        # Service entry point
+│   ├── japanese-wayland.py       # Service entry point
 │   ├── dbus_service.py           # DBus service
 │   ├── screenshot.py             # Desktop portal Screenshot DBus calls
-│   ├── ocr.py                    # Tesseract OCR engine (pluggable)
-│   ├── dictionary.py             # Mock dictionary (pluggable)
+│   ├── ocr.py                    # Tesseract OCR engine
+│   ├── dictionary.py             # Offline dictionary
 │   └── popup.py                  # GTK4 popup window
 ├── extension/
-│   ├── extension.js              # GNOME Shell Extension (~30 lines)
+│   ├── extension.js              # GNOME Shell Extension
 │   ├── metadata.json             # Extension metadata
 │   └── schemas/                  # GSettings schema for hotkeys
 ├── systemd/
 │   └── japanese-wayland.service   # systemd user service unit
 ├── install.sh                    # One-command install script
 └── README.md                     # This file
-```
-
----
-
-## Customization
-
-### Swapping the OCR Engine
-
-Edit `service/dbus_service.py` and change the engine in `JapaneseWaylandService.__init__()`:
-
-```python
-# Default: Tesseract CLI
-self.ocr = TesseractEngine()
-
-# Future: MangaOCR (when implemented)
-# self.ocr = MangaOcrEngine()
-```
-
-### Swapping the Dictionary
-
-Edit `service/dbus_service.py` and change the dictionary:
-
-```python
-# Default: Mock dictionary
-self.dictionary = MockDictionary()
-
-# Future: Jisho API or JMdict SQLite
-# self.dictionary = JishoDictionary()
 ```
 
 ---
