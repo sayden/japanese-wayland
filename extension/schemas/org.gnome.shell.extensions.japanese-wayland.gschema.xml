@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema id="org.gnome.shell.extensions.japanese-wayland" path="/org/gnome/shell/extensions/japanese-wayland/">
+        <key name="area-capture" type="as">
+            <default>['&lt;Super&gt;&lt;Shift&gt;J']</default>
+            <summary>Area capture hotkey</summary>
+        </key>
+        <key name="full-screen-capture" type="as">
+            <default>['&lt;Super&gt;&lt;Shift&gt;A']</default>
+            <summary>Full-screen capture hotkey</summary>
+        </key>
+    </schema>
+</schemalist>

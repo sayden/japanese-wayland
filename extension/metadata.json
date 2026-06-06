@@ -1,0 +1,16 @@
+{
+    "uuid": "japanese-wayland@japanese-wayland",
+    "name": "Japanese Wayland",
+    "description": "Screen text capture and dictionary lookup for Japanese. Requires the japanese-wayland Rust service.",
+    "version": 1,
+    "shell-version": [
+        "45",
+        "46",
+        "47",
+        "48",
+        "49",
+        "50"
+    ],
+    "url": "https://github.com/japanese-wayland/japanese-wayland",
+    "settings-schema": "org.gnome.shell.extensions.japanese-wayland"
+}
