@@ -1,0 +1,4 @@
+target
+service/__pycache__
+/dictionary/JMdict
+/extension/schemas/gschemas.compiled
