@@ -1,10 +1,12 @@
-from gi.repository import Gio, GLib
 import traceback
-from ocr import TesseractEngine
+
+from gi.repository import Gio, GLib
+
 from dictionary import JMdictDictionary
-from translator import translate_japanese_to_english
-from screenshot import screenshot_full_screen
+from ocr import TesseractEngine
 from popup import show_popup
+from screenshot import screenshot_full_screen
+from translator import translate_japanese_to_english
 
 DBUS_BUS_NAME = "com.japanesewayland.JapaneseWayland"
 DBUS_OBJECT_PATH = "/com/japanesewayland/JapaneseWayland"
@@ -26,10 +28,13 @@ xml = f"""
 </node>
 """
 
+
 class JapaneseWaylandService:
     def __init__(self):
         self.ocr = TesseractEngine()
-        self.dictionary = JMdictDictionary("/home/mcastro/projects/japanese-wayland/dictionary/JMdict")
+        self.dictionary = JMdictDictionary(
+            "/home/mcastro/projects/japanese-wayland/dictionary/JMdict"
+        )
         self.node_info = Gio.DBusNodeInfo.new_for_xml(xml)
         self.connection = None
         self.reg_id = None
@@ -41,7 +46,7 @@ class JapaneseWaylandService:
             Gio.BusNameOwnerFlags.NONE,
             self.on_bus_acquired,
             self.on_name_acquired,
-            self.on_name_lost
+            self.on_name_lost,
         )
 
     def on_bus_acquired(self, connection, name, user_data=None):
@@ -51,7 +56,7 @@ class JapaneseWaylandService:
             self.node_info.interfaces[0],
             self.handle_method_call,
             None,
-            None
+            None,
         )
 
     def on_name_acquired(self, connection, name, user_data=None):
@@ -67,10 +72,19 @@ class JapaneseWaylandService:
                 DBUS_OBJECT_PATH,
                 DBUS_INTERFACE,
                 "CaptureResult",
-                GLib.Variant('((saa{ss}ds))', (result_tuple,))
+                GLib.Variant("((saa{ss}ds))", (result_tuple,)),
             )
 
-    def handle_method_call(self, connection, sender, object_path, interface_name, method_name, parameters, invocation):
+    def handle_method_call(
+        self,
+        connection,
+        sender,
+        object_path,
+        interface_name,
+        method_name,
+        parameters,
+        invocation,
+    ):
         try:
             if method_name == "StartFullScreenCapture":
                 invocation.return_value(None)
@@ -81,9 +95,11 @@ class JapaneseWaylandService:
             elif method_name == "Lookup":
                 word = parameters.unpack()[0]
                 res = self.lookup_word(word)
-                invocation.return_value(GLib.Variant('((saa{ss}ds))', (res,)))
+                invocation.return_value(GLib.Variant("((saa{ss}ds))", (res,)))
             else:
-                invocation.return_dbus_error("org.freedesktop.DBus.Error.UnknownMethod", "Unknown method")
+                invocation.return_dbus_error(
+                    "org.freedesktop.DBus.Error.UnknownMethod", "Unknown method"
+                )
         except Exception as e:
             traceback.print_exc()
             invocation.return_dbus_error("org.freedesktop.DBus.Error.Failed", str(e))
@@ -93,11 +109,13 @@ class JapaneseWaylandService:
             defs = self.dictionary.lookup(word)
             def_list = []
             for d in defs:
-                def_list.append({
-                    'reading': d.reading,
-                    'meanings': "; ".join(d.meanings),
-                    'part_of_speech': d.part_of_speech
-                })
+                def_list.append(
+                    {
+                        "reading": d.reading,
+                        "meanings": "; ".join(d.meanings),
+                        "part_of_speech": d.part_of_speech,
+                    }
+                )
             return (word, def_list, 1.0, "")
         except Exception as e:
             return ("", [], 0.0, str(e))
@@ -107,9 +125,9 @@ class JapaneseWaylandService:
             print(f"Screenshot error: {error}")
             self.emit_capture_result(("", [], 0.0, str(error)))
             return
-            
+
         import threading
-        
+
         def ocr_thread():
             try:
                 ocr_result = self.ocr.recognize(path)
@@ -122,41 +140,44 @@ class JapaneseWaylandService:
             finally:
                 try:
                     import os
+
                     if os.path.exists(path):
                         os.remove(path)
                 except Exception as ex:
                     print(f"Failed to delete screenshot {path}: {ex}")
-                
+
         threading.Thread(target=ocr_thread, daemon=True).start()
-        
+
     def _on_ocr_done(self, ocr_result, translation, error):
         if error:
             traceback.print_exc()
             self.emit_capture_result(("", [], 0.0, str(error)))
             return
-            
+
         try:
             text = ocr_result.text
             confidence = ocr_result.confidence
-            
+
             if not text:
                 defs = []
             else:
                 defs = self.dictionary.lookup(text)
-            
+
             def_list = []
             for d in defs:
-                def_list.append({
-                    'reading': d.reading,
-                    'meanings': "; ".join(d.meanings),
-                    'part_of_speech': d.part_of_speech
-                })
-            
+                def_list.append(
+                    {
+                        "reading": d.reading,
+                        "meanings": "; ".join(d.meanings),
+                        "part_of_speech": d.part_of_speech,
+                    }
+                )
+
             res_tuple = (text, def_list, confidence, translation)
             self.emit_capture_result(res_tuple)
-            
+
             show_popup(text, defs, translation)
-            
+
         except Exception as e:
             traceback.print_exc()
             self.emit_capture_result(("", [], 0.0, str(e)))

@@ -23,6 +23,7 @@ systemctl --user start japanese-wayland.service
 echo "[2/3] Installing GNOME extension..."
 mkdir -p "$HOME/.local/share/gnome-shell/extensions/$EXTENSION_UUID"
 cp "$SCRIPT_DIR/extension/extension.js" "$HOME/.local/share/gnome-shell/extensions/$EXTENSION_UUID/"
+cp "$SCRIPT_DIR/extension/prefs.js" "$HOME/.local/share/gnome-shell/extensions/$EXTENSION_UUID/"
 cp "$SCRIPT_DIR/extension/metadata.json" "$HOME/.local/share/gnome-shell/extensions/$EXTENSION_UUID/"
 mkdir -p "$HOME/.local/share/gnome-shell/extensions/$EXTENSION_UUID/schemas"
 cp "$SCRIPT_DIR/extension/schemas/org.gnome.shell.extensions.japanese-wayland.gschema.xml" "$HOME/.local/share/gnome-shell/extensions/$EXTENSION_UUID/schemas/"
