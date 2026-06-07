@@ -51,7 +51,7 @@ mv JMdict_e dictionary/JMdict
 Clone the repository and run the install script:
 
 ```bash
-git clone https://github.com/yourusername/japanese-wayland.git
+git clone https://github.com/sayden/japanese-wayland.git
 cd japanese-wayland
 ./install.sh
 ```
